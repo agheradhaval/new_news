@@ -1,0 +1,77 @@
+id: top_posts
+label: Top Posts
+migration_group: default
+source:
+  plugin: url
+  data_fetcher_plugin: http
+  data_parser_plugin: simple_xml
+  urls:
+    - 'http://feeds.feedburner.com/ndtvnews-top-stories.xml'
+  item_selector: /rss/channel/item
+  fields:
+    -
+      name: description
+      label: 'Description'
+      selector: description
+    -
+      name: guid
+      label: 'GUID'
+      selector: guid
+    -
+      name: title
+      label: 'Title'
+      selector: title
+    -
+      name: link
+      label: 'Link'
+      selector: link
+    -
+      name: updatedAt
+      label: 'Updated At'
+      selector: pubDate
+      # Convert the pubDate value to timestamp.
+      process:
+        -
+          plugin: callback
+          callable: strtotime
+    -
+      name: pubDate
+      label: 'Pub Date'
+      selector: pubDate
+      # Convert the pubDate value to timestamp.
+      process:
+        -
+          plugin: callback
+          callable: strtotime
+    -
+      name: StoryImage
+      label: 'Story Image'
+      selector: StoryImage
+  ids:
+    guid:
+      type: string
+process:
+  guid: guid
+  field_description: description
+  title: title
+  link: link
+  updated_at:
+    plugin: format_date
+    from_format: 'D, d M Y H:i:s O'
+    to_format: 'Y-m-d\TH:i:s'
+    source: pubDate
+  pub_date:
+    plugin: format_date
+    from_format: 'D, d M Y H:i:s O'
+    to_format: 'Y-m-d\TH:i:s'
+    source: pubDate
+  StoryImage:
+    plugin: migration_lookup
+    migration: ndtv_news_image_migration
+    source: 'media\:content[1].@url'
+destination:
+  plugin: entity:node
+  default_bundle: custom_news
+migration_dependencies:
+  required:
+    - ndtv_news_image_migration

@@ -1,0 +1,23 @@
+id: ndtv_news_image_migration
+label: 'NDTV News Image Migration'
+migration_group: custom_migration
+
+source:
+  plugin: url
+  data_fetcher_plugin: http
+  data_parser_plugin: simple_xml
+  urls:
+    - 'http://feeds.feedburner.com/ndtvnews-top-stories.xml'
+  item_selector: /rss/channel/item
+
+process:
+  uri:
+    plugin: download
+    source: 'media\:content[1].@url'
+    fallback_image_url: 'https://example.com/default-image.jpg'
+
+destination:
+  plugin: 'entity:file'
+  scheme: public
+
+migration_dependencies: []

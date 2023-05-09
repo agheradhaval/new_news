@@ -1,0 +1,77 @@
+<?php
+/**
+ * Implements hook_install().
+ */
+function custom_migration_install() {
+  $fields = [
+    'guid' => [
+      'type' => 'text_long',
+      'label' => 'Guid',
+      'required' => TRUE,
+    ],
+     'field_description' => [
+      'type' => 'text_long',
+      'label' => 'description',
+      'required' => TRUE,
+    ],
+
+    'link' => [
+      'type' => 'link',
+      'label' => 'Link',
+      'required' => TRUE,
+    ],
+    'news_image' => [
+      'type' => 'file',
+      'label' => 'news Image',
+      'required' => TRUE,
+    ],
+    'pub_date' => [
+      'type' => 'datetime',
+      'label' => 'Publication Date',
+      'required' => TRUE,
+    ],
+    'updated_at' => [
+      'type' => 'datetime',
+      'label' => 'Updated At',
+      'required' => TRUE,
+    ],
+  ];
+
+  // Define the content type.
+  $node_type = [
+    'type' => 'custom_news',
+    'name' => 'Custom news',
+    'description' => 'A custom content type for stories.',
+    'title_label' => 'Title',
+    'custom' => TRUE,
+  ];
+
+  // Create the content type.
+  $content_type = \Drupal\node\Entity\NodeType::create($node_type);
+  $content_type->save();
+
+  // Add the fields to the content type.
+  foreach ($fields as $field_name => $field_data) {
+    $field_storage = [
+      'field_name' => $field_name,
+      'entity_type' => 'node',
+      'type' => $field_data['type'],
+      'cardinality' => 1,
+      'translatable' => TRUE,
+      'settings' => [],
+    ];
+    $field_storage = \Drupal\field\Entity\FieldStorageConfig::create($field_storage);
+    $field_storage->save();
+
+    $field_instance = [
+      'field_name' => $field_name,
+      'entity_type' => 'node',
+      'bundle' => 'custom_news',
+      'label' => $field_data['label'],
+      'required' => $field_data['required'],
+      'settings' => [],
+    ];
+    $field_instance = \Drupal\field\Entity\FieldConfig::create($field_instance);
+    $field_instance->save();
+  }
+}

@@ -1,0 +1,4 @@
+name: Custom Migration
+type: module
+description: Migration xml Data
+core_version_requirement: ^8 || ^9
